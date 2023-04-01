@@ -17,7 +17,7 @@ goblin = "0.6.1"
 log = "0.4.17"
 pelite = "0.10.0"
 reqwest = "0.11.15"
-serde = {version = "1.0.152", features = ["derive"]}
+serde = {version = "1.0.159", features = ["derive"]}
 serde_json = "1.0.93"
 thiserror = "1.0.38"
 tokio = {version = "1.26.0", features = ["rt", "fs", "macros", "rt-multi-thread"]}
