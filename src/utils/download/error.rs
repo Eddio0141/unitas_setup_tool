@@ -18,4 +18,6 @@ pub enum Error {
     Unzip(#[from] zip::result::ZipError),
     #[error("Empty download folder")]
     EmptyDownloadFolder,
+    #[error(transparent)]
+    Anyhow(#[from] anyhow::Error),
 }

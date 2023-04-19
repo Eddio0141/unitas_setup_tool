@@ -5,7 +5,7 @@ use std::{
     path::PathBuf,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use log::info;
 use zip::ZipArchive;
 
@@ -40,6 +40,14 @@ pub async fn download_unitas(version: &DownloadVersion) -> Result<(), Error> {
     match version {
         DownloadVersion::Stable => {
             let build = Build::latest_stable_build(UNITAS_OWNER, UNITAS_REPO).await?;
+
+            // delete previous stable release
+            if dest_path.is_dir() {
+                fs::remove_dir_all(&dest_path)
+                    .context("Could not remove previous stable release")?;
+                fs::create_dir_all(&dest_path)
+                    .context("Could not create stable release directory")?;
+            }
 
             info!("Extracting");
             build.extract_to_dir(&dest_path).await?;
