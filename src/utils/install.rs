@@ -189,6 +189,7 @@ async fn install_bepinex(
                 dest_path.display()
             );
             if bepinex_path.is_dir() {
+                debug!("{} is a dir", bepinex_path.display());
                 utils::fs::copy_dir_all(&bepinex_path, &dest_path, true).with_context(|| {
                     format!(
                         "Could not copy BepInEx folder from {} to {}",
@@ -197,6 +198,7 @@ async fn install_bepinex(
                     )
                 })?;
             } else {
+                debug!("{} is a file", bepinex_path.display());
                 fs::copy(&bepinex_path, &dest_path).with_context(|| {
                     format!(
                         "Could not copy BepInEx file from {} to {}",
