@@ -119,7 +119,7 @@ async fn install_bepinex(
                 let path = entry.path();
                 let file_name = path.file_name()?.to_string_lossy();
 
-                let exclusion = ["IL2CPP", "NetLauncher", platform];
+                let exclusion = ["IL2CPP", "NetLauncher", "Framework"];
 
                 if path.is_file()
                     || exclusion.contains(&file_name.as_ref())
@@ -133,13 +133,13 @@ async fn install_bepinex(
             .context("Could not find a BepInEx dir with the correct platform")
     }?;
 
-    // path to overwrite and if it's a directory
-    let overwrite_paths = [
-        Path::new("changelog.txt").to_owned(),
-        Path::new("doorstop_libs").to_owned(),
-        Path::new("winhttp.dll").to_owned(),
-        Path::new("doorstop_config.ini").to_owned(),
-        Path::new("BepInEx").join("core"),
+    // path to not overwrite if it exists
+    let dont_overwrite_paths = [
+        Path::new("run_bepinex.sh").to_string_lossy().to_string(),
+        Path::new("BepInEx")
+            .join("config")
+            .to_string_lossy()
+            .to_string(),
     ];
 
     let mut tasks = Vec::new();
@@ -157,32 +157,50 @@ async fn install_bepinex(
         }));
     }
 
-    for overwrite_path in overwrite_paths {
-        let source_path = bepinex_dir.join(&overwrite_path);
-        if !source_path.exists() {
+    let bepinex_files = fs::read_dir(&bepinex_dir)?;
+    for bepinex_path in bepinex_files {
+        let bepinex_path = bepinex_path.with_context(|| {
+            format!("Could not read BepInEx file from {}", bepinex_dir.display())
+        })?;
+
+        let bepinex_path = bepinex_path.path();
+        debug!("Processing BepInEx file: {}", bepinex_path.display());
+        let file_name = if let Some(file_name) = bepinex_path.file_name() {
+            file_name
+        } else {
+            debug!("Skipping BepInEx file: {}", bepinex_path.display());
+            continue;
+        };
+
+        let dest_path = game_dir.join(file_name);
+
+        // ignore check
+        if dest_path.exists()
+            && dont_overwrite_paths.contains(&file_name.to_string_lossy().to_string())
+        {
+            debug!("Skipping BepInEx file: {}", bepinex_path.display());
             continue;
         }
 
-        let dest_path = game_dir.join(overwrite_path);
         tasks.push(tokio::spawn(async move {
             debug!(
                 "Copying {} to {}",
-                source_path.display(),
+                bepinex_path.display(),
                 dest_path.display()
             );
-            if source_path.is_dir() {
-                utils::fs::copy_dir_all(&source_path, &dest_path, true).with_context(|| {
+            if bepinex_path.is_dir() {
+                utils::fs::copy_dir_all(&bepinex_path, &dest_path, true).with_context(|| {
                     format!(
                         "Could not copy BepInEx folder from {} to {}",
-                        source_path.display(),
+                        bepinex_path.display(),
                         dest_path.display()
                     )
                 })?;
             } else {
-                fs::copy(&source_path, &dest_path).with_context(|| {
+                fs::copy(&bepinex_path, &dest_path).with_context(|| {
                     format!(
                         "Could not copy BepInEx file from {} to {}",
-                        source_path.display(),
+                        bepinex_path.display(),
                         dest_path.display()
                     )
                 })?;
@@ -206,8 +224,6 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
     let unitas_dir = match unitas_version {
         DownloadVersion::Stable => {
             let unitas_dir = unitas_dir.join(paths::STABLE_DIR_NAME);
-
-            
 
             fs::read_dir(&unitas_dir)?
                 .collect::<Result<Vec<_>, _>>()
