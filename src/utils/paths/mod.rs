@@ -12,9 +12,16 @@ pub fn create_dir_if_not_exists(path: &Path) -> Result<(), self::error::Error> {
     Ok(())
 }
 
-fn data_storage_dir() -> Result<PathBuf, self::error::Error> {
+pub fn data_storage_dir() -> Result<PathBuf, self::error::Error> {
     let mut path = dirs::data_local_dir().ok_or(self::error::Error::NoLocalDataDir)?;
     path.push(env!("CARGO_PKG_NAME"));
+    create_dir_if_not_exists(&path)?;
+    Ok(path)
+}
+
+pub fn app_version_file() -> Result<PathBuf, self::error::Error> {
+    let mut path = data_storage_dir()?;
+    path.push("app_version");
     Ok(path)
 }
 

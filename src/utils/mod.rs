@@ -1,4 +1,5 @@
 pub mod assembly_version;
+pub mod cache_cleanup;
 pub mod cli;
 mod dll_file_version;
 pub mod download;

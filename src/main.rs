@@ -19,6 +19,8 @@ use clap::Parser;
 use log::*;
 use utils::cli::Cli;
 
+use crate::utils::cache_cleanup::process_cache_cleanup;
+
 mod error;
 mod prelude;
 mod utils;
@@ -28,6 +30,11 @@ async fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
         .format_timestamp(None)
         .init();
+
+    if let Err(error) = process_cache_cleanup().await {
+        error!("{}", error);
+        std::process::exit(1);
+    }
 
     debug!("Starting Cli parsing");
     let cli = Cli::parse();
