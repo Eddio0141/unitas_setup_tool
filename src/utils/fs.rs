@@ -27,10 +27,19 @@ pub fn copy_dir_all(from: &Path, to: &Path, overwrite: bool) -> Result<()> {
             let path = entry.path();
 
             if path.is_dir() {
+                // create dir while we're here
+                let Ok(from) = path.strip_prefix(from) else {
+                    bail!("Failed to get relative path from {} to {}", from.display(), path.display());
+                };
+
+                let to = to.join(from);
+                fs::create_dir_all(&to)
+                    .with_context(|| format!("Failed to create directory {}", to.display()))?;
+
                 found_dirs.push(path);
             } else {
-                let Some(from) = path.file_name() else {
-                    bail!("Failed to get file name from {}", path.display());
+                let Ok(from) = path.strip_prefix(from) else {
+                    bail!("Failed to get relative path from {} to {}", from.display(), path.display());
                 };
 
                 let to = to.join(from);
