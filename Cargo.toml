@@ -10,7 +10,7 @@ version = "1.2.0"
 
 [dependencies]
 anyhow = "1.0.71"
-clap = {version = "4.3.4", features = ["derive"]}
+clap = {version = "4.3.8", features = ["derive"]}
 dirs = "5.0.1"
 env_logger = "0.10.0"
 goblin = "0.7.1"
