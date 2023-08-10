@@ -243,7 +243,7 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
                     };
                     let file_name = file_name.to_string_lossy().to_string();
                     if file_name.starts_with(UNITAS_BEPINEX_DIR) {
-                        Some(path.join(file_name))
+                        Some(path)
                     } else {
                         None
                     }
@@ -271,7 +271,7 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
     let source_dest_dirs = [
         (
             unitas_dir.join(paths::unitas_plugins_dir()),
-            (dest_dir.join("plugins").join("UniTAS")),
+            (dest_dir.join("plugins").join("UniTAS")), // this doesn't exist in the stable version
         ),
         (
             unitas_dir.join(paths::unitas_patchers_dir()),
