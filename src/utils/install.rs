@@ -190,7 +190,13 @@ async fn install_bepinex(
             );
             if bepinex_path.is_dir() {
                 debug!("{} is a dir", bepinex_path.display());
-                utils::fs::copy_dir_all(&bepinex_path, &dest_path, true)?;
+                utils::fs::copy_dir_all(&bepinex_path, &dest_path, true).with_context(|| {
+                    format!(
+                        "Could not copy BepInEx folder from {} to {}",
+                        bepinex_path.display(),
+                        dest_path.display()
+                    )
+                })?;
             } else {
                 debug!("{} is a file", bepinex_path.display());
                 fs::copy(&bepinex_path, &dest_path).with_context(|| {
@@ -280,7 +286,13 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
             dest_dir.display()
         );
 
-        utils::fs::copy_dir_all(&source_dir, &dest_dir, true)?;
+        utils::fs::copy_dir_all(&source_dir, &dest_dir, true).with_context(|| {
+        format!(
+            "Could not copy UniTAS folder from {} to {}",
+            source_dir.display(),
+            dest_dir.display()
+        )
+    })?;
     }
 
     Ok(())
