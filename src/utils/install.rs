@@ -271,7 +271,7 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
     let source_dest_dirs = [
         (
             unitas_dir.join(paths::unitas_plugins_dir()),
-            (dest_dir.join("plugins").join("UniTAS")), // this doesn't exist in the stable version
+            (dest_dir.join("plugins").join("UniTAS")),
         ),
         (
             unitas_dir.join(paths::unitas_patchers_dir()),
