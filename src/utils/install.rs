@@ -286,13 +286,18 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
             dest_dir.display()
         );
 
+        if !source_dir.exists() {
+            warn!("{} does not exist, skipping", source_dir.display());
+            continue;
+        }
+
         utils::fs::copy_dir_all(&source_dir, &dest_dir, true).with_context(|| {
-        format!(
-            "Could not copy UniTAS folder from {} to {}",
-            source_dir.display(),
-            dest_dir.display()
-        )
-    })?;
+            format!(
+                "Could not copy UniTAS folder from {} to {}",
+                source_dir.display(),
+                dest_dir.display()
+            )
+        })?;
     }
 
     Ok(())
