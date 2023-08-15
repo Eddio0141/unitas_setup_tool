@@ -15,6 +15,8 @@
             packages = with pkgs; [
               rustc
               cargo
+              pkg-config
+              openssl
             ];
           };
       };
