@@ -17,7 +17,11 @@
               cargo
               pkg-config
               openssl
+              rust-analyzer
             ];
+            shellHook = ''
+              export RUST_SRC_PATH="${pkgs.rustPlatform.rustLibSrc}"
+            '';
           };
       };
     };
