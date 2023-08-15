@@ -270,24 +270,21 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
 
     // enumerate over the downloaded directories
     let source_dest_dirs = {
-        let mut source_dest_dirs = Vec::new(); 
-        
-        for entry 
-            in unitas_dir.read_dir().with_context(|| 
-                format!("unable to read from {}", unitas_dir.display())
-            )?
+        let mut source_dest_dirs = Vec::new();
+
+        for entry in unitas_dir
+            .read_dir()
+            .with_context(|| format!("unable to read from {}", unitas_dir.display()))?
         {
             if let Ok(entry) = entry {
                 source_dest_dirs.push((
                     entry.path(),
-                    dest_dir.join(
-                        entry
-                            .path()
-                            .strip_prefix(&unitas_dir)
-                            .with_context(|| 
-                                format!("Could not determine destination path for {}", entry.path().display())
-                            )?
-                    ),
+                    dest_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
+                        format!(
+                            "Could not determine destination path for {}",
+                            entry.path().display()
+                        )
+                    })?),
                 ))
             }
         }
