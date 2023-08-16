@@ -266,8 +266,6 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
             )),
     };
 
-    let dest_dir = game_dir.join("BepInEx");
-
     // enumerate over the downloaded directories
     let source_dest_dirs = {
         let mut source_dest_dirs = Vec::new();
@@ -279,7 +277,7 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
             if let Ok(entry) = entry {
                 source_dest_dirs.push((
                     entry.path(),
-                    dest_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
+                    game_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
                         format!(
                             "Could not determine destination path for {}",
                             entry.path().display()
