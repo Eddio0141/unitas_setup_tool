@@ -266,18 +266,29 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
             )),
     };
 
-    let dest_dir = game_dir.join("BepInEx");
+    // enumerate over the downloaded directories
+    let source_dest_dirs = {
+        let mut source_dest_dirs = Vec::new();
 
-    let source_dest_dirs = [
-        (
-            unitas_dir.join(paths::unitas_plugins_dir()),
-            (dest_dir.join("plugins").join("UniTAS")),
-        ),
-        (
-            unitas_dir.join(paths::unitas_patchers_dir()),
-            (dest_dir.join("patchers").join("UniTAS")),
-        ),
-    ];
+        for entry in unitas_dir
+            .read_dir()
+            .with_context(|| format!("unable to read from {}", unitas_dir.display()))?
+        {
+            if let Ok(entry) = entry {
+                source_dest_dirs.push((
+                    entry.path(),
+                    game_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
+                        format!(
+                            "Could not determine destination path for {}",
+                            entry.path().display()
+                        )
+                    })?),
+                ))
+            }
+        }
+
+        source_dest_dirs
+    };
 
     for (source_dir, dest_dir) in source_dest_dirs {
         debug!(
