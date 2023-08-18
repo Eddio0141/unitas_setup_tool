@@ -273,18 +273,17 @@ async fn install_unitas(game_dir: &Path, unitas_version: DownloadVersion) -> Res
         for entry in unitas_dir
             .read_dir()
             .with_context(|| format!("unable to read from {}", unitas_dir.display()))?
+            .flatten()
         {
-            if let Ok(entry) = entry {
-                source_dest_dirs.push((
-                    entry.path(),
-                    game_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
-                        format!(
-                            "Could not determine destination path for {}",
-                            entry.path().display()
-                        )
-                    })?),
-                ))
-            }
+            source_dest_dirs.push((
+                entry.path(),
+                game_dir.join(entry.path().strip_prefix(&unitas_dir).with_context(|| {
+                    format!(
+                        "Could not determine destination path for {}",
+                        entry.path().display()
+                    )
+                })?),
+            ))
         }
 
         source_dest_dirs
