@@ -18,6 +18,7 @@
               pkg-config
               openssl
               rust-analyzer
+              clippy
             ];
             shellHook = ''
               export RUST_SRC_PATH="${pkgs.rustPlatform.rustLibSrc}"
