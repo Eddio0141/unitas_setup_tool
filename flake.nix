@@ -19,6 +19,7 @@
               openssl
               rust-analyzer
               clippy
+              rustfmt
             ];
             shellHook = ''
               export RUST_SRC_PATH="${pkgs.rustPlatform.rustLibSrc}"
