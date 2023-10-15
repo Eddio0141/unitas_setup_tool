@@ -40,7 +40,7 @@
                       enable = true;
                       name = "cargo test";
                       description = "Run cargo test";
-                      entry = "cargo test";
+                      entry = "${pkgs.cargo}/bin/cargo test";
                       fail_fast = true;
                     };
                   };
