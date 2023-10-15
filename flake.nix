@@ -1,30 +1,39 @@
 {
-  description = "Development environment for this project";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
+    devenv.url = "github:cachix/devenv";
   };
 
-  outputs = { self, flake-parts, ... } @ inputs:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { pkgs, ... }: {
-        devShells.default =
-          pkgs.mkShell {
-            packages = with pkgs; [
-              rustc
-              cargo
-              pkg-config
-              openssl
-              rust-analyzer
-              clippy
-              rustfmt
-            ];
-            shellHook = ''
-              export RUST_SRC_PATH="${pkgs.rustPlatform.rustLibSrc}"
-            '';
-          };
-      };
+  nixConfig = {
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
+  };
+
+  outputs = { self, nixpkgs, devenv, systems, ... } @ inputs:
+    let
+      forEachSystem = nixpkgs.lib.genAttrs (import systems);
+    in
+    {
+      packages = forEachSystem (system: {
+        devenv-up = self.devShells.${system}.default.config.procfileScript;
+      });
+      devShells = forEachSystem
+        (system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+          in
+          {
+            default = devenv.lib.mkShell {
+              inherit inputs pkgs;
+              modules = [
+                {
+                  packages = with pkgs; [ openssl ];
+
+                  languages.rust.enable = true;
+                }
+              ];
+            };
+          });
     };
 }
