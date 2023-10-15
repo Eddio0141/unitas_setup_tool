@@ -31,6 +31,11 @@
                   packages = with pkgs; [ openssl ];
 
                   languages.rust.enable = true;
+
+                  pre-commit.hooks = {
+                    rustfmt.enable = true;
+                    clippy.enable = true;
+                  };
                 }
               ];
             };
