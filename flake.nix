@@ -41,7 +41,8 @@
                       name = "cargo test";
                       description = "Run cargo test";
                       entry = "cargo test";
-                    }
+                      fail_fast = true;
+                    };
                   };
                 }
               ];
