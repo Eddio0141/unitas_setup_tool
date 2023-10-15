@@ -29,7 +29,11 @@ pub fn copy_dir_all(from: &Path, to: &Path, overwrite: bool) -> Result<()> {
             if path.is_dir() {
                 // create dir while we're here
                 let Ok(from) = path.strip_prefix(from) else {
-                    bail!("Failed to get relative path from {} to {}", from.display(), path.display());
+                    bail!(
+                        "Failed to get relative path from {} to {}",
+                        from.display(),
+                        path.display()
+                    );
                 };
 
                 let to = to.join(from);
@@ -39,7 +43,11 @@ pub fn copy_dir_all(from: &Path, to: &Path, overwrite: bool) -> Result<()> {
                 found_dirs.push(path);
             } else {
                 let Ok(from) = path.strip_prefix(from) else {
-                    bail!("Failed to get relative path from {} to {}", from.display(), path.display());
+                    bail!(
+                        "Failed to get relative path from {} to {}",
+                        from.display(),
+                        path.display()
+                    );
                 };
 
                 let to = to.join(from);

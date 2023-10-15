@@ -15,7 +15,9 @@ impl FromStr for AssemblyVersion {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split('.');
 
-        let (Some(major), Some(minor), Some(build), Some(revision)) = (parts.next(), parts.next(), parts.next(), parts.next()) else {
+        let (Some(major), Some(minor), Some(build), Some(revision)) =
+            (parts.next(), parts.next(), parts.next(), parts.next())
+        else {
             return Err(error::Error::InvalidAssemblyVersionString(s.to_string()));
         };
 

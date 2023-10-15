@@ -49,11 +49,11 @@ impl LocalVersions {
                 }
 
                 let Some(file_name) = path.file_name() else {
-                            continue;
-                        };
+                    continue;
+                };
                 let Some(file_name) = file_name.to_str() else {
-                            continue;
-                        };
+                    continue;
+                };
 
                 let version = version_handle(file_name);
                 versions.push(version);
