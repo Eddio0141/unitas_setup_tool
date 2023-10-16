@@ -36,7 +36,7 @@
                     rustfmt.enable = true;
                     clippy.enable = true;
                     # cargo test
-                    cargo-test = {
+                    "cargo-test" = {
                       enable = true;
                       name = "cargo test";
                       description = "Run cargo test";
