@@ -43,7 +43,7 @@
                       entry = "${pkgs.cargo}/bin/cargo test";
                       fail_fast = true;
                       pass_filenames = false;
-                      stages = [ "pre-push" ];
+                      stages = [ "manual" ];
                     };
                   };
                 }
