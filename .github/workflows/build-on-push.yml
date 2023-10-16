@@ -3,17 +3,17 @@ name: build-on-push
 on: [push]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build-windows:
+    runs-on: windows-latest
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        build-mode: [debug, release]
     steps:
     - name: Checkout
       uses: actions/checkout@v3.4.0
       with:
         submodules: true
-    - name: rustup toolchain install
+    - name: Rustup toolchain install
       uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: stable
@@ -21,15 +21,59 @@ jobs:
     - name: Rust cache
       uses: Swatinem/rust-cache@v2.2.1
     - name: Clippy checks
+      if: matrix.build-mode == 'debug'
       run: cargo clippy --all-targets --all-features -- -D warnings
     - name: Build debug
+      if: matrix.build-mode == 'debug'
       run: cargo build
     - name: Build release
+      if: matrix.build-mode == 'release'
       run: cargo build --release
-    - name: Get built artifacts
+    - name: Get built artifacts, debug
+      if: matrix.build-mode == 'debug'
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: unitas_setup_tool-${{ matrix.os }}
-        path: |
-          target/debug/unitas_setup_tool*
-          target/release/unitas_setup_tool*
+        name: unitas_setup_tool-windows-latest
+        path: target/debug/unitas_setup_tool*
+    - name: Get built artifacts, release
+      if: matrix.build-mode == 'release'
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: unitas_setup_tool-windows-latest
+        path: target/release/unitas_setup_tool*
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build-mode: [debug, release]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3.4.0
+      with:
+        submodules: true
+    - name: Install Nix
+      uses: cachix/install-nix-action@v23
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - name: Rust cache
+      uses: Swatinem/rust-cache@v2.2.1
+    - name: Clippy checks
+      run: nix develop --impure -c -- cargo clippy --all-targets --all-features -- -D warnings
+    - name: Build debug
+      if: matrix.build-mode == 'debug'
+      run: nix develop --impure -c -- cargo build
+    - name: Build release
+      if: matrix.build-mode == 'release'
+      run: nix develop --impure -c -- cargo build --release
+    - name: Get built artifacts, debug
+      if: matrix.build-mode == 'debug'
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: unitas_setup_tool-ubuntu-latest
+        path: target/debug/unitas_setup_tool*
+    - name: Get built artifacts, release
+      if: matrix.build-mode == 'release'
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: unitas_setup_tool-ubuntu-latest
+        path: target/release/unitas_setup_tool*
