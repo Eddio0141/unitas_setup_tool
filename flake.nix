@@ -32,18 +32,24 @@
 
                   languages.rust.enable = true;
 
-                  pre-commit.hooks = {
-                    rustfmt.enable = true;
-                    clippy.enable = true;
-                    # cargo test
-                    "cargo-test" = {
-                      enable = true;
-                      name = "cargo test";
-                      description = "Run cargo test";
-                      entry = "${pkgs.cargo}/bin/cargo test";
-                      fail_fast = true;
-                      pass_filenames = false;
-                      stages = [ "manual" ];
+                  pre-commit = {
+                    settings.clippy = {
+                      allFeatures = true;
+                      offline = false;
+                    };
+                    hooks = {
+                      rustfmt.enable = true;
+                      clippy.enable = true;
+                      # cargo test
+                      "cargo-test" = {
+                        enable = true;
+                        name = "cargo test";
+                        description = "Run cargo test";
+                        entry = "${pkgs.cargo}/bin/cargo test";
+                        fail_fast = true;
+                        pass_filenames = false;
+                        stages = [ "manual" ];
+                      };
                     };
                   };
                 }
