@@ -38,7 +38,7 @@ jobs:
     - name: Get built artifacts
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: unitas_setup_tool-windows-latest
+        name: unitas_setup_tool-windows-latest-${{ matrix.build-mode }}
         path: target/${{ matrix.build-mode }}/unitas_setup_tool*
   build-linux:
     runs-on: ubuntu-latest
