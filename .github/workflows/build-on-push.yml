@@ -35,18 +35,11 @@ jobs:
     - name: Build release
       if: matrix.build-mode == 'release'
       run: cargo build --release
-    - name: Get built artifacts, debug
-      if: matrix.build-mode == 'debug'
+    - name: Get built artifacts
       uses: actions/upload-artifact@v3.1.2
       with:
         name: unitas_setup_tool-windows-latest
-        path: target/debug/unitas_setup_tool*
-    - name: Get built artifacts, release
-      if: matrix.build-mode == 'release'
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: unitas_setup_tool-windows-latest
-        path: target/release/unitas_setup_tool*
+        path: target/${{ matrix.build-mode }}/unitas_setup_tool*
   build-linux:
     runs-on: ubuntu-latest
     strategy:
@@ -74,15 +67,8 @@ jobs:
     - name: Build release
       if: matrix.build-mode == 'release'
       run: nix develop --impure -c -- cargo build --release
-    - name: Get built artifacts, debug
-      if: matrix.build-mode == 'debug'
+    - name: Get built artifacts
       uses: actions/upload-artifact@v3.1.2
       with:
         name: unitas_setup_tool-ubuntu-latest
-        path: target/debug/unitas_setup_tool*
-    - name: Get built artifacts, release
-      if: matrix.build-mode == 'release'
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: unitas_setup_tool-ubuntu-latest
-        path: target/release/unitas_setup_tool*
+        path: target/${{ matrix.build-mode }}/unitas_setup_tool*
