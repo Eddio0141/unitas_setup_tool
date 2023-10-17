@@ -23,6 +23,12 @@ jobs:
     - name: Clippy checks
       if: matrix.build-mode == 'debug'
       run: cargo clippy --all-targets --all-features -- -D warnings
+    - name: Rustfmt checks
+      if: matrix.build-mode == 'debug'
+      run: cargo fmt --all -- --check
+    - name: Cargo test
+      if: matrix.build-mode == 'debug'
+      run: cargo test --all-targets --all-features
     - name: Build debug
       if: matrix.build-mode == 'debug'
       run: cargo build
@@ -57,8 +63,11 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
     - name: Rust cache
       uses: Swatinem/rust-cache@v2.2.1
-    - name: Clippy checks
-      run: nix develop --impure -c -- cargo clippy --all-targets --all-features -- -D warnings
+    - name: Run pre-commit hooks
+      if: matrix.build-mode == 'debug'
+      run: |
+        nix develop --impure -c -- pre-commit run --all-files
+        nix develop --impure -c -- pre-commit run --hook-stage manual --all-files
     - name: Build debug
       if: matrix.build-mode == 'debug'
       run: nix develop --impure -c -- cargo build
