@@ -12,7 +12,7 @@ version = "1.2.1"
 anyhow = "1.0.75"
 clap = {version = "4.4.7", features = ["derive"]}
 dirs = "5.0.1"
-env_logger = "0.10.0"
+env_logger = "0.10.1"
 goblin = "0.7.1"
 log = "0.4.20"
 pelite = "0.10.0"
