@@ -9,7 +9,7 @@ pub enum Error {
     #[error("IO error: {0}")]
     Io(#[from] io::Error),
     #[error(transparent)]
-    DllFileVersionError(#[from] dll_file_version::error::Error),
+    DllFileVersion(#[from] dll_file_version::error::Error),
     #[error(transparent)]
     Other(#[from] anyhow::Error),
 }
