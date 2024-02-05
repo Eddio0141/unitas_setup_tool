@@ -16,7 +16,7 @@ env_logger = "0.10.2"
 goblin = "0.8.0"
 log = "0.4.20"
 pelite = "0.10.0"
-reqwest = "0.11.23"
+reqwest = "0.11.24"
 serde = {version = "1.0.196", features = ["derive"]}
 serde_json = "1.0.113"
 thiserror = "1.0.56"
