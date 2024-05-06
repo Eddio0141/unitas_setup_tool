@@ -1,60 +1,47 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
-    devenv.url = "github:cachix/devenv";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixpkgs.url = "github:NixOS/nixpkgs";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  nixConfig = {
-    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
-    extra-substituters = "https://devenv.cachix.org";
-  };
+  outputs = { flake-parts, ... } @ inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+      ];
+      perSystem = { self', inputs', system, pkgs, ... }:
+      let
+        # check https://github.com/nix-community/fenix for what toolchains are available
+        toolchain = inputs'.fenix.packages.stable;
 
-  outputs = { self, nixpkgs, devenv, systems, ... } @ inputs:
-    let
-      forEachSystem = nixpkgs.lib.genAttrs (import systems);
-    in
-    {
-      packages = forEachSystem (system: {
-        devenv-up = self.devShells.${system}.default.config.procfileScript;
-      });
-      devShells = forEachSystem
-        (system:
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          {
-            default = devenv.lib.mkShell {
-              inherit inputs pkgs;
-              modules = [
-                {
-                  packages = with pkgs; [ openssl ];
+        fenix = toolchain.withComponents [
+          "rustc"
+          "cargo"
+          "rustfmt"
+          "rust-analyzer"
+          "clippy"
+          "rust-src"
+        ];
 
-                  languages.rust.enable = true;
-
-                  pre-commit = {
-                    settings.clippy = {
-                      allFeatures = true;
-                      offline = false;
-                    };
-                    hooks = {
-                      rustfmt.enable = true;
-                      clippy.enable = true;
-                      # cargo test
-                      "cargo-test" = {
-                        enable = true;
-                        name = "cargo test";
-                        description = "Run cargo test";
-                        entry = "${pkgs.cargo}/bin/cargo test";
-                        fail_fast = true;
-                        pass_filenames = false;
-                        stages = [ "manual" ];
-                      };
-                    };
-                  };
-                }
-              ];
-            };
-          });
+        rust-doc = pkgs.writeShellApplication {
+          name = "rust-doc";
+          text = ''
+            xdg-open "${toolchain.rust-docs}/share/doc/rust/html/index.html"
+          '';
+        };
+      in {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            fenix rust-doc
+            openssl
+            cmake
+            pkg-config
+          ];
+        };
+      };
     };
 }
