@@ -13,7 +13,7 @@ anyhow = "1.0.82"
 clap = {version = "4.5.4", features = ["derive"]}
 dirs = "5.0.1"
 env_logger = "0.10.2"
-goblin = "0.8.1"
+goblin = "0.8.2"
 log = "0.4.21"
 pelite = "0.10.0"
 reqwest = "0.12.4"
