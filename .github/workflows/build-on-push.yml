@@ -58,10 +58,10 @@ jobs:
       uses: Swatinem/rust-cache@v2.2.1
     - name: Build debug
       if: matrix.build-mode == 'debug'
-      run: nix develop --impure -c -- cargo build
+      run: nix develop -c -- cargo build
     - name: Build release
       if: matrix.build-mode == 'release'
-      run: nix develop --impure -c -- cargo build --release
+      run: nix develop -c -- cargo build --release
     - name: Get built artifacts
       uses: actions/upload-artifact@v3.1.2
       with:
